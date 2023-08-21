@@ -11,7 +11,7 @@ class ImplementationIteratorTest extends TestCase
      *
      * @return ImplementationIterator
      */
-    public function createIterator($instanceOf)
+    public function createIterator($instanceOf): ImplementationIterator
     {
         return new ImplementationIterator(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures', 'Scheb\\Tests\\Fixtures', $instanceOf);
     }
@@ -23,7 +23,7 @@ class ImplementationIteratorTest extends TestCase
      *
      * @return array
      */
-    private function getArray(\Iterator $iterator)
+    private function getArray(\Iterator $iterator): array
     {
         $elements = array();
         foreach ($iterator as $element) {
@@ -33,26 +33,26 @@ class ImplementationIteratorTest extends TestCase
         return $elements;
     }
 
-    public function testInterfaceReturnsImplementations()
+    public function testInterfaceReturnsImplementations(): void
     {
         $iterator = $this->createIterator('Scheb\\Tests\\Fixtures\\AInterface');
         $this->assertImplementations($iterator);
     }
 
-    public function testAbstractClassReturnsImplementations()
+    public function testAbstractClassReturnsImplementations(): void
     {
         $iterator = $this->createIterator('Scheb\\Tests\\Fixtures\\AbstractAImplementation');
         $this->assertImplementations($iterator);
     }
 
-    public function testClassReturnsExtensions()
+    public function testClassReturnsExtensions(): void
     {
         $iterator = $this->createIterator('Scheb\\Tests\\Fixtures\\AImplementation');
         $array = $this->getArray($iterator);
         $this->assertContains('Scheb\\Tests\\Fixtures\\AImplementationExtension', $array);
     }
 
-    private function assertImplementations($iterator)
+    private function assertImplementations($iterator): void
     {
         $array = $this->getArray($iterator);
         $this->assertContains('Scheb\\Tests\\Fixtures\\AImplementation', $array);

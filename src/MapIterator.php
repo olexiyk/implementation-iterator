@@ -24,7 +24,7 @@ class MapIterator extends \IteratorIterator
         }
         $this->callback = $callback;
     }
-    public function current()
+    public function current(): mixed
     {
         return call_user_func($this->callback, parent::current());
     }

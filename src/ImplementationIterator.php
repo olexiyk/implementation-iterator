@@ -21,27 +21,27 @@ class ImplementationIterator implements \Iterator
         $this->reflectionIterator = new ImplementationReflectionIterator($directory, $namespace, $classOrInterface);
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->reflectionIterator->current()->getName();
     }
 
-    public function next()
+    public function next(): void
     {
         $this->reflectionIterator->next();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->reflectionIterator->key();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->reflectionIterator->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->reflectionIterator->rewind();
     }
