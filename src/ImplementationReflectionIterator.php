@@ -1,7 +1,15 @@
 <?php
 namespace Scheb;
 
-class ImplementationReflectionIterator implements \Iterator
+use CallbackFilterIterator;
+use Iterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionClass;
+use ReflectionException;
+use SplFileInfo;
+
+class ImplementationReflectionIterator implements Iterator
 {
 
     /**
@@ -25,7 +33,7 @@ class ImplementationReflectionIterator implements \Iterator
     private $namespace;
 
     /**
-     * @var \Iterator
+     * @var Iterator
      */
     private $iterator;
 
@@ -40,30 +48,30 @@ class ImplementationReflectionIterator implements \Iterator
     {
         $this->directory = realpath($directory);
         $this->classOrInterface = $classOrInterface;
-        $reflection = new \ReflectionClass($classOrInterface);
+        $reflection = new ReflectionClass($classOrInterface);
         $this->isInterface = $reflection->isInterface();
         $this->namespace = $namespace;
         $self = $this;
 
         // Recursive iterator on directory
-        $directoryIterator = new \RecursiveDirectoryIterator($this->directory);
+        $directoryIterator = new RecursiveDirectoryIterator($this->directory);
 
         // Flatten recursive iterator
-        $flatIterator = new \RecursiveIteratorIterator($directoryIterator);
+        $flatIterator = new RecursiveIteratorIterator($directoryIterator);
 
         // Filter PHP files
-        $regexIterator = new CallbackFilterIterator($flatIterator, function (\SplFileInfo $file) {
+        $regexIterator = new CallbackFilterIterator($flatIterator, function (SplFileInfo $file) {
             return substr($file->getFilename(), -4) === '.php';
         });
 
         // Create reflection from it
-        $reflectionMapper = new MapIterator($regexIterator, function (\SplFileInfo $file) use ($self) {
+        $reflectionMapper = new MapIterator($regexIterator, function (SplFileInfo $file) use ($self) {
             return $self->createReflection($file);
         });
 
         // Filter implementations
         $reflectionFilter = new CallbackFilterIterator($reflectionMapper, function ($reflection) use ($self) {
-            if ($reflection instanceof \ReflectionClass) {
+            if ($reflection instanceof ReflectionClass) {
                 return $self->isImplementation($reflection);
             }
 
@@ -76,17 +84,17 @@ class ImplementationReflectionIterator implements \Iterator
     /**
      * Create reflection from file path
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
-     * @return null|\ReflectionClass
+     * @return null|ReflectionClass
      */
-    public function createReflection(\SplFileInfo $file)
+    public function createReflection(SplFileInfo $file): ?ReflectionClass
     {
         $filePath = substr($file->getPathname(), strlen($this->directory), -4);
         $className = $this->namespace . str_replace('/', '\\', $filePath);
         try {
-            return new \ReflectionClass($className);
-        } catch (\ReflectionException $e) {
+            return new ReflectionClass($className);
+        } catch (ReflectionException $e) {
         }
 
         return null;
@@ -97,7 +105,7 @@ class ImplementationReflectionIterator implements \Iterator
      *
      * @return bool
      */
-    public function isImplementation(\ReflectionClass $reflection)
+    public function isImplementation(ReflectionClass $reflection): bool
     {
         // We don't want abstract classes or interfaces
         if ($reflection->isAbstract() || $reflection->isInterface()) {
@@ -113,27 +121,27 @@ class ImplementationReflectionIterator implements \Iterator
         return true;
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->iterator->current();
     }
 
-    public function next()
+    public function next(): void
     {
         $this->iterator->next();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->iterator->key();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->iterator->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->iterator->rewind();
     }
