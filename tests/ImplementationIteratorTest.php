@@ -1,9 +1,9 @@
 <?php
-namespace Scheb\tests;
 
+use PHPUnit\Framework\TestCase;
 use Scheb\ImplementationIterator;
 
-class ImplementationIteratorTest extends \PHPUnit_Framework_TestCase
+class ImplementationIteratorTest extends TestCase
 {
 
     /**
